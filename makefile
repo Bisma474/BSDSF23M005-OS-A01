@@ -1,61 +1,43 @@
 CC = gcc
-CFLAGS = -std=c11 -O0 -Wall -g -Iinclude
-LIBS = -lc
-
-# Object files for library (no main.o here)
-LIB_OBJS = obj/mystrfunctions.o obj/myfilefunctions.o
-
-# Main object file
-MAIN_OBJ = obj/main.o
-
-# Final executable (dynamic style from Task 02)
-TARGET = bin/client
-
-# Static library and client for Task 03
+CFLAGS = -std=c11 -Wall -g -Iinclude
+SRCDIR = src
+OBJDIR = obj
 LIBDIR = lib
-LIBNAME = libmyutils.a
-STATIC_LIB = $(LIBDIR)/$(LIBNAME)
-STATIC_TARGET = bin/client_static
+BINDIR = bin
+LIBNAME = myutils
 
-INSTDIR = /usr/bin
+# Object files for library (not including main.c)
+LIBOBJS = $(OBJDIR)/mystrfunctions.o $(OBJDIR)/myfilefunctions.o
 
-all: $(TARGET)
+# Default target
+all: $(BINDIR)/client_dynamic
 
-# Normal executable (from Task 02)
-$(TARGET): $(LIB_OBJS) $(MAIN_OBJ) | bin
-	$(CC) -o $@ $(LIB_OBJS) $(MAIN_OBJ) $(LIBS)
+# ----------- Compilation Rules --------------
 
-# Build static library
-$(STATIC_LIB): $(LIB_OBJS) | lib
-	ar rcs $@ $(LIB_OBJS)
-	ranlib $@
+# Compile .c → .o for library (with -fPIC)
+$(OBJDIR)/%.o: $(SRCDIR)/%.c | $(OBJDIR)
+	$(CC) $(CFLAGS) -fPIC -c $< -o $@
 
-# Build client_static linked against static lib
-$(STATIC_TARGET): $(MAIN_OBJ) $(STATIC_LIB) | bin
-	$(CC) -o $@ $(MAIN_OBJ) -L$(LIBDIR) -lmyutils $(LIBS)
+# Compile main separately (no -fPIC)
+$(OBJDIR)/main.o: $(SRCDIR)/main.c | $(OBJDIR)
+	$(CC) $(CFLAGS) -c $< -o $@
 
-# Compile objects via src/Makefile
-$(LIB_OBJS) $(MAIN_OBJ):
-	$(MAKE) -C src
+# ----------- Build Library & Executable ------
 
-bin:
-	mkdir -p bin
+# Build shared library (.so)
+$(LIBDIR)/lib$(LIBNAME).so: $(LIBOBJS) | $(LIBDIR)
+	$(CC) -shared -Wl,-soname,lib$(LIBNAME).so -o $@ $^
 
-lib:
-	mkdir -p lib
+# Build client linked against shared library
+$(BINDIR)/client_dynamic: $(OBJDIR)/main.o $(LIBDIR)/lib$(LIBNAME).so | $(BINDIR)
+	$(CC) $(CFLAGS) $(OBJDIR)/main.o -L$(LIBDIR) -l$(LIBNAME) -o $@ \
+		-Wl,-rpath,'$$ORIGIN/../lib'
+
+# ----------- Utility Targets ----------------
+
+$(OBJDIR) $(LIBDIR) $(BINDIR):
+	mkdir -p $@
 
 clean:
-	-@rm -f $(TARGET) $(STATIC_TARGET) $(STATIC_LIB) $(LIB_OBJS) $(MAIN_OBJ)
-	$(MAKE) -C src clean
+	rm -rf $(OBJDIR)/* $(LIBDIR)/* $(BINDIR)/*
 
-install: $(TARGET)
-	@if [ -d $(INSTDIR) ]; then \
-		cp $(TARGET) $(INSTDIR) && \
-		chmod a+x $(INSTDIR)/$(TARGET) && \
-		chmod og-w $(INSTDIR)/$(TARGET) && \
-		echo "$(TARGET) installed successfully in $(INSTDIR)"; \
-	fi
-
-uninstall:
-	@rm -f $(INSTDIR)/$(notdir $(TARGET))
-	@echo "$(notdir $(TARGET)) successfully un-installed from $(INSTDIR)"
