@@ -1,0 +1,4 @@
+ame ssh.github.com
+  Port 443
+  User git
+
