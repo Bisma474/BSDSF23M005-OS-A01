@@ -1,0 +1,30 @@
+.TH MYGREP 3 "2025-09-23" "libmyutils" "Library Functions"
+.SH NAME
+mygrep \- search file for lines containing a substring and return matches
+.SH SYNOPSIS
+#include "myfilefunctions.h"
+
+int mygrep(FILE *fp, const char *search_str, char ***matches);
+.SH DESCRIPTION
+mygrep scans the file stream fp and collects lines that contain the substring search_str.
+For each matching line, a heap-allocated copy is appended to an array of char* pointers.
+On success the function returns the count of matches and sets *matches to point to
+the newly-allocated array (caller is responsible for freeing each string and the array).
+
+On failure (e.g., fp or search_str is NULL or an I/O error), the function returns -1 and
+*matches may be left unchanged or set to NULL (caller should check the return value).
+
+Memory ownership: caller must free every string in *matches and then free(*matches).
+.SH RETURN VALUE
+Number of matching lines (>=0) on success, -1 on failure.
+.SH EXAMPLE
+.B
+char **hits = NULL;
+int n = mygrep(f, "TODO", &hits);
+if (n > 0) {
+    for (int i=0; i<n; ++i) free(hits[i]);
+    free(hits);
+}
+.SH AUTHOR
+Bisma Munir<bsdsf23m005@gmail.com>
+

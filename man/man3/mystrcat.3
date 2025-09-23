@@ -1,0 +1,23 @@
+.TH MYSTRCAT 3 "2025-09-23" "libmyutils" "Library Functions"
+.SH NAME
+mystrcat \- append src onto end of dest
+.SH SYNOPSIS
+#include "mystrfunctions.h"
+
+int mystrcat(char *dest, const char *src);
+.SH DESCRIPTION
+mystrcat appends the NUL-terminated string src to the end of dest. The destination buffer
+dest must have enough space to hold the result (original dest contents + src + terminating NUL).
+
+The function returns the number of characters appended (not counting the final NUL).
+.SH RETURN VALUE
+On success returns number of characters appended (>= 0). Behaviour is undefined if dest
+or src is NULL or dest lacks space.
+.SH EXAMPLE
+.B
+char buf[20] = "foo";
+int n = mystrcat(buf, "bar");  /* buf == "foobar", n == 3 */
+.SH AUTHOR
+Bisma Munir <bsdsf23m005@pucit.edu.pk>
+
+
