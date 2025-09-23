@@ -1,4 +1,4 @@
-# 1. Explain the linking rule in this part's Makefile:
+##  Explain the linking rule in this part's Makefile:
 
 $(TARGET): $(OBJECTS)
 How does it differ from a Makefile rule that links against a library?
@@ -14,7 +14,7 @@ $(TARGET): $(OBJECTS) → direct linking with object files.
 
 $(TARGET): ... -lmyutils → linking with a library, which is neater and reusable.
 
-# 2. What is a git tag and why is it useful in a project?
+##  What is a git tag and why is it useful in a project?
 
 What is the difference between a simple tag and an annotated tag?
 
@@ -32,7 +32,7 @@ Lets others (and your future self) download the exact snapshot of the project.
 Simple tag → just a name pointing to a commit (like a quick bookmark).
 Annotated tag → more complete: it stores a message, author, and date. It’s the “official” way to tag a release. Most projects prefer annotated tags because they hold extra info.
 
-# 3. What is the purpose of creating a "Release" on GitHub?
+## What is the purpose of creating a "Release" on GitHub?
 
 What is the significance of attaching binaries (like your client executable) to it?
 
@@ -49,7 +49,7 @@ Attaching binaries (like client, static-client, dynamic-client) is important bec
 Not everyone wants to compile the code themselves.
 
 It proves your code builds correctly on your machine.
-# Compare the Makefile from Part 2 and Part 3.
+## Compare the Makefile from Part 2 and Part 3.
 
 What are the key differences in the variables and rules that enable the creation of a static library?
 
@@ -65,7 +65,7 @@ The client executable now links with -L and -lmyutils instead of listing all the
 
 So the key difference is that Part 3 bundles object files into one reusable library, while Part 2 just passes them one by one into the linker.
 
-# What is the purpose of the ar command? Why is ranlib often used immediately after it?
+## What is the purpose of the ar command? Why is ranlib often used immediately after it?
 
 The ar command is used to create static libraries (archive files). It basically takes a bunch of .o files and bundles them into one .a file.
 
@@ -81,7 +81,7 @@ So in short:
 ar → builds the library.
 
 ranlib → makes the library easier and faster to use.
-# When you run nm on your client_static executable, are the symbols for functions like mystrlen present?
+## When you run nm on your client_static executable, are the symbols for functions like mystrlen present?
 
 What does this tell you about how static linking works?
 
@@ -94,7 +94,7 @@ The code for the functions is copied directly into the executable at build time.
 That’s why client_static doesn’t need libmyutils.a at runtime — everything it needs is already baked in.
 
 It also explains why static executables are usually bigger in size compared to dynamic ones.
-# What is Position-Independent Code (-fPIC) and why is it a fundamental requirement for creating shared libraries?
+## What is Position-Independent Code (-fPIC) and why is it a fundamental requirement for creating shared libraries?
 
 -fPIC means Position-Independent Code. It tells the compiler to generate machine code that doesn’t depend on being loaded at a specific memory address.
 
@@ -102,7 +102,7 @@ Why it matters: shared libraries (.so) can be loaded by many programs at the sam
 
 So basically: -fPIC makes the code flexible so the OS can drop the library anywhere in memory and it will still work. That’s why it’s required for .so files.
 
-# Explain the difference in file size between your static and dynamic clients. Why does this difference exist?
+## Explain the difference in file size between your static and dynamic clients. Why does this difference exist?
 
 The static client is bigger in size because the entire library code is copied into the executable. Every function you use (like mystrlen, mygrep) is inside the binary itself.
 
@@ -110,7 +110,7 @@ The dynamic client is smaller because it doesn’t carry the full library inside
 
 So the difference exists because static linking duplicates library code into the program, while dynamic linking shares one copy of the library across many programs.
 
-# What is the LD_LIBRARY_PATH environment variable? Why was it necessary to set it for your program to run, and what does this tell you about the responsibilities of the operating system's dynamic loader?
+## What is the LD_LIBRARY_PATH environment variable? Why was it necessary to set it for your program to run, and what does this tell you about the responsibilities of the operating system's dynamic loader?
 
 LD_LIBRARY_PATH is an environment variable that tells the system where to look for shared libraries when running a program.
 
@@ -126,3 +126,4 @@ This shows that it’s the dynamic loader’s job to resolve all the shared libr
 For professors, it saves them time — they can just run the program.
 
 So a Release is basically: “Here’s the final, polished version of my project, and here are the ready-made files to run it.”
+
